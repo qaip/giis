@@ -39,7 +39,8 @@ class Paint:
         self.canvas.bind("<Button-1>", self.click_handler)
 
     def _setup_tools(self):
-        self.colors = ["black", "red", "green", "blue", "yellow", "orange", "purple"]
+        self.colors = ["black", "red", "green",
+                       "blue", "yellow", "orange", "purple"]
         self.selected_color = self.colors[0]
         self.mode = [
             "DDA",
@@ -95,7 +96,7 @@ class Paint:
         self.debug_button.pack(side=tk.TOP, padx=5, pady=5)
 
         self.debug_button_cool_line = ttk.Button(
-            self.tool_frame, text="Debug Cool Lines", command=self.debug_cool_lines
+            self.tool_frame, text="Animated Debug", command=self.debug_cool_lines
         )
         self.debug_button_cool_line.pack(side=tk.TOP, padx=5, pady=5)
 
@@ -237,7 +238,8 @@ class Paint:
             y = 0
             for i in range(len(self.additional)):
                 if pixels[i][0] == prev_x:
-                    self.additional[i] = (prev_add_x, prev_add_y, self.additional[i][2])
+                    self.additional[i] = (
+                        prev_add_x, prev_add_y, self.additional[i][2])
                 else:
                     self.additional[i] = (
                         pixels[i][0] + 10 * x * sign_x,
@@ -249,7 +251,8 @@ class Paint:
                     x += 1
 
                 if pixels[i][1] == prev_y:
-                    self.additional[i] = (prev_add_x, prev_add_y, self.additional[i][2])
+                    self.additional[i] = (
+                        prev_add_x, prev_add_y, self.additional[i][2])
                 else:
                     self.additional[i] = (
                         prev_add_x,

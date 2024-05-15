@@ -12,50 +12,61 @@ class Point:
 class PolygonEditor:
     def __init__(self, master):
         self.master = master
-        self.master.title("Simple Polygon Editor")
+        self.master.title("Редактор полигонов")
         self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
         self.points = []
         self.current_polygon = None
 
         self.canvas.bind("<Button-1>", self.add_point)
-        self.btn_convexity = tk.Button(self.master, text="Check Convexity", command=self.check_convexity)
+        self.btn_convexity = tk.Button(
+            self.master, text="Выпуклость", command=self.check_convexity)
         self.btn_convexity.pack(side=tk.LEFT)
-        self.btn_normals = tk.Button(self.master, text="Calculate Normals", command=self.calculate_normals)
+        self.btn_normals = tk.Button(
+            self.master, text="Нормали", command=self.calculate_normals)
         self.btn_normals.pack(side=tk.LEFT)
-        self.btn_graham = tk.Button(self.master, text="Graham's Convex Hull", command=self.graham_convex_hull)
+        self.btn_graham = tk.Button(
+            self.master, text="Graham's Convex Hull", command=self.graham_convex_hull)
         self.btn_graham.pack(side=tk.LEFT)
-        self.btn_jarvis = tk.Button(self.master, text="Jarvis Convex Hull", command=self.jarvis_convex_hull)
+        self.btn_jarvis = tk.Button(
+            self.master, text="Jarvis Convex Hull", command=self.jarvis_convex_hull)
         self.btn_jarvis.pack(side=tk.LEFT)
-        self.btn_check_point = tk.Button(self.master, text="Check Point", command=self.check_point)
+        self.btn_check_point = tk.Button(
+            self.master, text="Проверка точки", command=self.check_point)
         self.btn_check_point.pack(side=tk.LEFT)
         self.entry_point = tk.Entry(self.master)
         self.entry_point.pack(side=tk.LEFT)
-        self.btn_clear = tk.Button(self.master, text="Clear", command=self.clear_canvas)
+        self.btn_clear = tk.Button(
+            self.master, text="Очистить", command=self.clear_canvas)
         self.btn_clear.pack(side=tk.LEFT)
 
-        self.btn_check_intersection = tk.Button(self.master, text="Check Intersection", command=self.check_intersection)
+        self.btn_check_intersection = tk.Button(
+            self.master, text="Проверка на пересечение", command=self.check_intersection)
         self.btn_check_intersection.pack(side=tk.LEFT)
         self.entry_line = tk.Entry(self.master)
         self.entry_line.pack(side=tk.LEFT)
 
     def check_intersection(self):
         if len(self.points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         line_str = self.entry_line.get()
         try:
             x1, y1, x2, y2 = map(float, line_str.split(","))
         except ValueError:
-            messagebox.showwarning("Warning", "Invalid line coordinates format. Please enter as 'x1, y1, x2, y2'.")
+            messagebox.showwarning(
+                "Warning", "Неверный формат координат. Введите 'x1, y1, x2, y2'.")
             return
 
         intersections = self.line_polygon_intersections((x1, y1), (x2, y2))
         if intersections:
-            messagebox.showinfo("Intersection Check", f"The line intersects the polygon at {intersections}.")
+            messagebox.showinfo(
+                "Проверка на пересечение", f"Отрезок пересекает полигон в точках {intersections}.")
         else:
-            messagebox.showinfo("Intersection Check", "The line does not intersect the polygon.")
+            messagebox.showinfo("Проверка на пересечение",
+                                "Линия не пересекает полигон")
 
     def line_polygon_intersections(self, point1, point2):
         intersections = []
@@ -66,7 +77,8 @@ class PolygonEditor:
             intersection = self.line_intersection(point1, point2, p1, p2)
             if intersection:
                 intersections.append(intersection)
-        self.canvas.create_line(point1[0], point1[1], point2[0], point2[1], fill="black", width=2)
+        self.canvas.create_line(
+            point1[0], point1[1], point2[0], point2[1], fill="black", width=2)
         return intersections
 
     def line_intersection(self, point1, point2, point3, point4):
@@ -77,8 +89,10 @@ class PolygonEditor:
         denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
         if denominator == 0:
             return None
-        px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / denominator
-        py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / denominator
+        px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2)
+              * (x3 * y4 - y3 * x4)) / denominator
+        py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2)
+              * (x3 * y4 - y3 * x4)) / denominator
         if min(x1, x2) <= px <= max(x1, x2) and min(y1, y2) <= py <= max(y1, y2) and \
                 min(x3, x4) <= px <= max(x3, x4) and min(y3, y4) <= py <= max(y3, y4):
             return px, py
@@ -90,11 +104,13 @@ class PolygonEditor:
         self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="black")
         if self.current_polygon:
             self.canvas.delete(self.current_polygon)
-        self.current_polygon = self.canvas.create_polygon(self.points, outline="blue", fill="", width=2)
+        self.current_polygon = self.canvas.create_polygon(
+            self.points, outline="blue", fill="", width=2)
 
     def check_convexity(self):
         if len(self.points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         is_convex = True
@@ -110,13 +126,15 @@ class PolygonEditor:
                 break
 
         if is_convex:
-            messagebox.showinfo("Convexity Check", "The polygon is convex.")
+            messagebox.showinfo("Проверка на выпуклость", "Полигон выпуклый.")
         else:
-            messagebox.showinfo("Convexity Check", "The polygon is not convex.")
+            messagebox.showinfo("Проверка на выпуклость",
+                                "Полигон не выпуклый.")
 
     def calculate_normals(self):
         if len(self.points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         normals = []
@@ -131,7 +149,8 @@ class PolygonEditor:
             p = self.points[i]
             n = normals[i]
             end_point = (p[0] + n[0], p[1] + n[1])
-            self.canvas.create_line(p[0], p[1], end_point[0], end_point[1], fill="black", width=2)
+            self.canvas.create_line(
+                p[0], p[1], end_point[0], end_point[1], fill="black", width=2)
 
         #  messagebox.showinfo("Normals", f"The normals are: {normals}")
 
@@ -143,7 +162,8 @@ class PolygonEditor:
         points = self.points[:]
         self.clear_canvas()
         if len(points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         points = sorted(points)
@@ -165,7 +185,8 @@ class PolygonEditor:
         points = self.points[:]
         self.clear_canvas()
         if len(points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         hull = []
@@ -185,20 +206,24 @@ class PolygonEditor:
 
     def check_point(self):
         if len(self.points) < 3:
-            messagebox.showwarning("Warning", "At least 3 points are needed to form a polygon.")
+            messagebox.showwarning(
+                "Warning", "Для построения полигона необходимо обозначить как минимум 3 точки.")
             return
 
         point_str = self.entry_point.get()
         try:
             x, y = map(float, point_str.split(","))
         except ValueError:
-            messagebox.showwarning("Warning", "Invalid point coordinates format. Please enter as 'x, y'.")
+            messagebox.showwarning(
+                "Warning", "Invalid point coordinates format. Please enter as 'x, y'.")
             return
 
         if self.point_in_polygon((x, y)):
-            messagebox.showinfo("Point Check", f"The point ({x}, {y}) is inside the polygon.")
+            messagebox.showinfo("Point Check", f"The point ({
+                                x}, {y}) is inside the polygon.")
         else:
-            messagebox.showinfo("Point Check", f"The point ({x}, {y}) is outside the polygon.")
+            messagebox.showinfo("Point Check", f"The point ({
+                                x}, {y}) is outside the polygon.")
         self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="black")
 
     def point_in_polygon(self, point):
@@ -212,7 +237,8 @@ class PolygonEditor:
                 if y <= max(p1y, p2y):
                     if x <= max(p1x, p2x):
                         if p1y != p2y:
-                            xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                            xinters = (y - p1y) * (p2x - p1x) / \
+                                (p2y - p1y) + p1x
                         if p1x == p2x or x <= xinters:
                             inside = not inside
             p1x, p1y = p2x, p2y
